@@ -5,6 +5,12 @@ import android.os.Bundle
 import com.example.xiaomibandnotification.model.NavigationData
 
 object MapsParser {
+    private val rules = listOf(
+        "Rẽ trái vào " to "← ",
+        "Rẽ phải vào " to "→ ",
+        "Tiếp tục trên " to "↑ ",
+        "về hướng " to "↑ "
+    )
 
     fun parse(extras: Bundle): NavigationData {
 
@@ -19,33 +25,30 @@ object MapsParser {
 
         return NavigationData(
             title = title,
-            message = formatInstruction(text),
+            message = simplify(text),
             eta = sub
         )
     }
 
-    private fun formatInstruction(text: String): String {
+    private fun simplify(text: String): String {
 
-        return when {
-
-            text.contains("Rẽ trái", ignoreCase = true) ->
-                "⬅️ $text"
-
-            text.contains("Rẽ phải", ignoreCase = true) ->
-                "➡️ $text"
-
-            text.contains("Đi thẳng", ignoreCase = true) ->
-                "⬆️ $text"
-
-            text.contains("vòng xuyến", ignoreCase = true) ->
-                "🔄 $text"
-
-            text.contains("đến nơi", ignoreCase = true) ->
-                "🏁 $text"
-
-            else ->
-                "🧭 $text"
+        for ((prefix, arrow) in rules) {
+            if (text.startsWith(prefix)) {
+                return arrow + cleanStreetName(text.removePrefix(prefix))
+            }
         }
+
+        return text
     }
 
+    private fun cleanStreetName(name: String): String {
+
+        return name
+            .replace("Đ. ", "")
+            .replace("Đường ", "")
+            .replace("Đại lộ ", "")
+            .replace("Quốc lộ ", "")
+            .replace("Tỉnh lộ ", "")
+            .trim()
+    }
 }

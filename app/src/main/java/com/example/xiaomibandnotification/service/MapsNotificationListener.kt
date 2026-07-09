@@ -8,7 +8,7 @@ import com.example.xiaomibandnotification.helper.NotificationHelper
 import com.example.xiaomibandnotification.parser.MapsParser
 
 class MapsNotificationListener : NotificationListenerService() {
-
+    private var lastInstruction: String? = null
     companion object {
         private const val TAG = "MapsListener"
     }
